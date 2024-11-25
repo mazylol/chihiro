@@ -26,5 +26,15 @@ CPMAddPackage("gh:libcpr/cpr#1.11.1")
 CPMAddPackage("gh:fmtlib/fmt#11.0.2")
 CPMAddPackage("gh:nlohmann/json@3.11.3")
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/commands/Kick.cpp
+    src/commands/Kick.h
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE dotenvloader dpp cpr::cpr fmt::fmt nlohmann_json::nlohmann_json)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+            CXX_STANDARD 20
+            CXX_STANDARD_REQUIRED ON
+            POSITION_INDEPENDENT_CODE ON
+)
