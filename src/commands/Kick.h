@@ -5,7 +5,7 @@
 
 namespace Commands {
     dpp::slashcommand register_kick_command(dpp::cluster *bot);
-    void handle_kick_command(dpp::cluster *bot, const dpp::slashcommand_t *event);
+    auto handle_kick_command(const dpp::slashcommand_t &event) -> dpp::task<void>;
 }
 
 #endif // CHIHIRO_COMMAND_KICK_H

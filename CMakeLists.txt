@@ -20,7 +20,14 @@ endif ()
 
 include(cmake/CPM.cmake)
 
-CPMAddPackage("gh:brainboxdotcc/DPP@10.0.28")
+CPMAddPackage(
+    "gh:brainboxdotcc/DPP@10.0.28"
+    NAME dpp
+    VERSION 10.0.28
+    GITHUB_REPOSITORY brainboxdotcc/DPP
+    OPTIONS
+        "DPP_CORO ON"
+)
 CPMAddPackage("gh:mazylol/dotenvloader@1.0.1")
 CPMAddPackage("gh:libcpr/cpr#1.11.1")
 CPMAddPackage("gh:fmtlib/fmt#11.0.2")

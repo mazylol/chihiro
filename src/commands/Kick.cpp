@@ -12,15 +12,16 @@ dpp::slashcommand Commands::register_kick_command(dpp::cluster *bot) {
     return command;
 }
 
-void Commands::handle_kick_command(dpp::cluster *bot, const dpp::slashcommand_t *event) {
-    dpp::snowflake target_id = std::get<dpp::snowflake>(event->get_parameter("user"));
-    dpp::guild_member target = event->command.get_resolved_member(target_id);
+auto Commands::handle_kick_command(const dpp::slashcommand_t &event) -> dpp::task<void> {
+    dpp::cluster *bot = event.from->creator;
 
-    bot->guild_member_kick(target.guild_id, target.user_id, [event](const dpp::confirmation_callback_t &callback) -> void {
-        if (callback.is_error()) {
-            event->reply(dpp::message("Failed to kick user").set_flags(dpp::m_ephemeral));
-        } else {
-            event->reply(dpp::message("Successfully kicked user").set_flags(dpp::m_ephemeral));
-        }
-    });
+    auto member = std::get<dpp::snowflake>(event.get_parameter("member"));
+
+    dpp::confirmation_callback_t completion = co_await bot->co_guild_member_kick(event.command.guild_id, member);
+
+    if (completion.is_error()) {
+        event.reply("Failed to kick member");
+    } else {
+        event.reply("Member kicked");
+    }
 }
