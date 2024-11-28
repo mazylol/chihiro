@@ -54,6 +54,7 @@ void on_ready(struct discord *client, const struct discord_ready *event) {
                                              vars.guild_id, &params, NULL);
 
     register_kick_command(client, event->application->id, vars.guild_id, vars.prod);
+    register_ban_command(client, event->application->id, vars.guild_id, vars.prod);
 }
 
 void on_interaction(struct discord *client, const struct discord_interaction *event) {
@@ -69,7 +70,9 @@ void on_interaction(struct discord *client, const struct discord_interaction *ev
 
         discord_create_interaction_response(client, event->id, event->token, &params, NULL);
     } else if (strcmp(event->data->name, "kick") == 0) {
-        kick_command_handler(client, event);
+        handle_kick_command(client, event);
+    } else if (strcmp(event->data->name, "ban") == 0) {
+        handle_ban_command(client, event);
     }
 }
 
