@@ -3,8 +3,11 @@
 #include <string.h>
 
 #include <dotenv.h>
+#include <sqlite3.h>
 
 #include "commands/commands.h"
+
+sqlite3 *db;
 
 struct env_vars {
     const char *dev_token;
@@ -70,14 +73,25 @@ void on_interaction(struct discord *client, const struct discord_interaction *ev
 
         discord_create_interaction_response(client, event->id, event->token, &params, NULL);
     } else if (strcmp(event->data->name, "kick") == 0) {
-        handle_kick_command(client, event);
+        handle_kick_command(client, event, db);
     } else if (strcmp(event->data->name, "ban") == 0) {
-        handle_ban_command(client, event);
+        handle_ban_command(client, event, db);
     }
+}
+
+int callback(void *NotUsed, int argc, char **argv, char **azColName) {
+    return 0;
 }
 
 int main() {
     vars = load_env_vars();
+
+    int rc;
+
+    rc = sqlite3_open("chihiro.db", &db);
+    if (rc != SQLITE_OK) {
+        printf("Error opening SQLite DB in memory: %s\n", sqlite3_errmsg(db));
+    }    
 
     struct discord *client = {0};
 
@@ -91,4 +105,6 @@ int main() {
     discord_set_on_interaction_create(client, *on_interaction);
 
     discord_run(client);
+
+    sqlite3_close(db);
 }
