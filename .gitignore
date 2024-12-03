@@ -1,1 +1,4 @@
 /builddir
+/buildDir
+/.env
+/chihiro.db

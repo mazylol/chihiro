@@ -1,7 +1,5 @@
 #include "commands.h"
 
-#include <string.h>
-
 void register_kick_command(struct discord *client, u64snowflake g_app_id, u64snowflake guild_id, bool prod) {
     struct discord_application_command_option options[] = {
         {.type = DISCORD_APPLICATION_OPTION_USER,
@@ -38,9 +36,7 @@ void register_kick_command(struct discord *client, u64snowflake g_app_id, u64sno
 
         discord_create_guild_application_command(client, g_app_id, guild_id, &params, NULL);
     }
-
-    return;
-};
+}
 
 void handle_kick_command(struct discord *client, const struct discord_interaction *event, sqlite3 *db) {
     sqlite3_stmt *stmt;
@@ -60,6 +56,14 @@ void handle_kick_command(struct discord *client, const struct discord_interactio
     }
 
     rc = sqlite3_step(stmt);
+
+    if (rc == SQLITE_ROW) {
+        sqlite3_finalize(stmt);
+        return;
+    } else if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Failed to step: %s\n", sqlite3_errmsg(db));
+        return;
+    }
 
     // check if kick command is enabled
     if (sqlite3_column_int64(stmt, 2) == 0) {
@@ -85,7 +89,7 @@ void handle_kick_command(struct discord *client, const struct discord_interactio
         char *value = event->data->options->array[i].value;
 
         if (0 == strcmp(name, "user")) {
-            sscanf(value, "%" SCNu64, &user);
+            user = strtoull(value, NULL, 10);
         } else if (0 == strcmp(name, "reason")) {
             reason = value;
         }
